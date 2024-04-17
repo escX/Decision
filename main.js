@@ -1,7 +1,8 @@
-// require('dotenv').config()
-// console.log(process.env)
-const advantage = require('./src/advantage')
+// const Decimal = require('decimal.js')
+// add sub mul div
+
+const getAdvantages = require('./src/advantages')
 
 module.exports = {
-  advantage,
+  getAdvantages,
 }
