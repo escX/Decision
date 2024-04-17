@@ -4,29 +4,21 @@
       object: string
       moreBetter: string[]
     }[]
-    output(优势信息熵): number
+    output(优势信息熵): [number, number]
  */
 
-const Decimal = require('decimal.js')
-
-// 计算优势概率
-function getAdvanProbability(advanAmount, totalAmount) {
-  const a = new Decimal(advanAmount)
-  const b = new Decimal(totalAmount)
-
-  return a.div(b)
-}
-
-// 遍历累加：(moreBetter.length / objectAmount) * (1 - (moreBetter.length / objectAmount))
+// 遍历累加 (moreBetter.length * (objectAmount - moreBetter.length)) / (objectAmount * objectAmount)
 function getAdvanInfoEntropy(data) {
-  let entropy = 0
+  const objectAmount = data.length
+  const entropyDen = objectAmount * objectAmount // 分母
+  let entropyNum = 0 // 分子
 
   data.forEach(item => {
-    const advanProbability = getAdvanProbability(item.moreBetter.length, data.length)
-    entropy += (advanProbability * (1 - advanProbability))
+    const moreBetterAmount = item.moreBetter.length
+    entropyNum += moreBetterAmount * (data.length - moreBetterAmount)
   })
 
-  return entropy
+  return [entropyNum, entropyDen]
 }
 
 module.exports = getAdvanInfoEntropy
