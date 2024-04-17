@@ -1,5 +1,5 @@
 /**
- * 优势类计算
+ * 计算优势类
     input(直觉模糊系统数据): {
       object: string
       props: [number, number][]
