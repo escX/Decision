@@ -4,29 +4,39 @@
       object: string
       props: [number, number][]
     }[]
-    input2(属性权重): number[]
+    input2(优势类个数): number[]
+    input3(属性权重): [number, number][]
     output(条件概率): {
       object: string
-      probabiliey: number[]
+      probability: number[]
     }[]
  */
 
-function getConditionProbability(props, weight) {
-  let memshipProbability = 0
-  let nonMemshipProbability = 0
+const Decimal = require('decimal.js')
+
+function getConditionProbability(props, advanAmount, weights) {
+  let memshipProbability = new Decimal(0)
+  let nonMemshipProbability = new Decimal(0)
+  const advanAmountDecimal = new Decimal(advanAmount)
 
   for (let i = 0; i < props.length; i++) {
-    memshipProbability += props[i][0] * weight[i]
-    nonMemshipProbability += props[i][1] * weight[i]
+    const memship = new Decimal(props[i][0])
+    const nonMemship = new Decimal(props[i][1])
+    const weightDecimal = new Decimal(weights[i][0]).div(new Decimal(weights[i][1]))
+    memshipProbability = memshipProbability.plus(memship.times(weightDecimal))
+    nonMemshipProbability = nonMemshipProbability.plus(nonMemship.times(weightDecimal))
   }
 
-  return [memshipProbability, nonMemshipProbability]
+  return [
+    memshipProbability.div(advanAmountDecimal).toNumber(),
+    nonMemshipProbability.div(advanAmountDecimal).toNumber()
+  ]
 }
 
-function getConditionProbabilities(data, weight) {
-  return data.map(item => ({
+function getConditionProbabilities(data, advanAmounts, weights) {
+  return data.map((item, index) => ({
     object: item.object,
-    probability: getConditionProbability(item.props, weight)
+    probability: getConditionProbability(item.props, advanAmounts[index], weights)
   }))
 }
 

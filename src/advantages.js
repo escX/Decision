@@ -15,7 +15,7 @@ const s = Number(process.env.s)
 
 // 判断 propB 优于 propA 条件：
 // 隶属度: propB >= propA && 非隶属度 propB <= propA
-function isBetterProp (propA, propB) {
+function isBetterProp(propA, propB) {
   const [memshipDegreeA, NonMemshipDegreeA] = propA
   const [memshipDegreeB, NonMemshipDegreeB] = propB
 
@@ -23,7 +23,7 @@ function isBetterProp (propA, propB) {
 }
 
 // 返回所有 objectB 优于 objectA 的属性
-function getBetterProps (objectA, objectB) {
+function getBetterProps(objectA, objectB) {
   const betterPropsIndex = []
   for (let i = 0; i < objectA.props.length; i++) {
     if (isBetterProp(objectA.props[i], objectB.props[i])) {
@@ -35,7 +35,7 @@ function getBetterProps (objectA, objectB) {
 }
 
 // 遍历所有数据，判断 B 相对于 A 优势属性的数量，大于等于 s * 属性数量，则 B 优于 A
-function getAdvantages (data) {
+function getAdvantages(data) {
   const res = []
 
   for (let i = 0; i < data.length; i++) {
