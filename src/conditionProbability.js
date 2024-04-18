@@ -1,43 +1,33 @@
 /**
  * 计算条件概率
-    input1(直觉模糊系统数据): {
-      object: string
-      props: [number, number][]
-    }[]
-    input2(优势类个数): number[]
-    input3(属性权重): [number, number][]
-    output(条件概率): {
-      object: string
-      probability: number[]
-    }[]
+    input1(对象优势类的隶属度和非隶属度): [number, number][][]
+    input2(属性权重): [number, number][]
+    output(条件概率): [number, number]
  */
 
 const Decimal = require('decimal.js')
 
-function getConditionProbability(props, advanAmount, weights) {
-  let memshipProbability = new Decimal(0)
-  let nonMemshipProbability = new Decimal(0)
-  const advanAmountDecimal = new Decimal(advanAmount)
+function getConditionProbability(advanMemship, weights) {
+  let memshipTotal = new Decimal(0)
+  let nonMemshipTotal = new Decimal(0)
+  const advanAmount = new Decimal(advanMemship.length)
+  const weightsDecimal = weights.map(item => new Decimal(item[0]).div(new Decimal(item[1])))
 
-  for (let i = 0; i < props.length; i++) {
-    const memship = new Decimal(props[i][0])
-    const nonMemship = new Decimal(props[i][1])
-    const weightDecimal = new Decimal(weights[i][0]).div(new Decimal(weights[i][1]))
-    memshipProbability = memshipProbability.plus(memship.times(weightDecimal))
-    nonMemshipProbability = nonMemshipProbability.plus(nonMemship.times(weightDecimal))
+  for (let i = 0; i < advanMemship.length; i++) {
+    // 计算第i个优势对象
+    const object = advanMemship[i]
+    for (let j = 0; j < object.length; j++) {
+      // 计算第j个属性
+      const memShipDecimal = object[j].map(item => new Decimal(item))
+      memshipTotal = memshipTotal.plus(memShipDecimal[0].times(weightsDecimal[j]))
+      nonMemshipTotal = nonMemshipTotal.plus(memShipDecimal[1].times(weightsDecimal[j]))
+    }
   }
 
   return [
-    memshipProbability.div(advanAmountDecimal).toNumber(),
-    nonMemshipProbability.div(advanAmountDecimal).toNumber()
+    memshipTotal.div(advanAmount).toNumber(),
+    nonMemshipTotal.div(advanAmount).toNumber()
   ]
 }
 
-function getConditionProbabilities(data, advanAmounts, weights) {
-  return data.map((item, index) => ({
-    object: item.object,
-    probability: getConditionProbability(item.props, advanAmounts[index], weights)
-  }))
-}
-
-module.exports = getConditionProbabilities
+module.exports = getConditionProbability
