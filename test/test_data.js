@@ -1,3 +1,6 @@
+// 西格玛参数
+const S = 0.6
+
 // 直觉模糊系统数据
 const IFIS_data = [
   {
@@ -62,17 +65,66 @@ const IFIS_data = [
   }
 ]
 
-// 优势类数据
-const advantages_data = [
-  { object: 'x1', moreBetter: ['x1', 'x5'] },
-  { object: 'x2', moreBetter: ['x2', 'x3', 'x5'] },
-  { object: 'x3', moreBetter: ['x3', 'x4', 'x5'] },
-  { object: 'x4', moreBetter: ['x4'] },
-  { object: 'x5', moreBetter: ['x5'] },
-  { object: 'x6', moreBetter: ['x1', 'x2', 'x3', 'x4', 'x5', 'x6'] }
+// 相对损失函数
+const relativeLoss = [
+  {
+    object: 'x1',
+    pp: [0, 1],
+    bp: [0.25, 0.55],
+    np: [0.54, 0.20],
+    pn: [0.76, 0.07],
+    bn: [0.41, 0.37],
+    nn: [0, 1]
+  },
+  {
+    object: 'x2',
+    pp: [0, 1],
+    bp: [0.36, 0.54],
+    np: [0.71, 0.19],
+    pn: [0.76, 0.15],
+    bn: [0.41, 0.49],
+    nn: [0, 1]
+  },
+  {
+    object: 'x3',
+    pp: [0, 1],
+    bp: [0.26, 0.53],
+    np: [0.56, 0.18],
+    pn: [0.76, 0.08],
+    bn: [0.41, 0.39],
+    nn: [0, 1]
+  },
+  {
+    object: 'x4',
+    pp: [0, 1],
+    bp: [0.15, 0.65],
+    np: [0.80, 0.13],
+    pn: [0.93, 0.05],
+    bn: [0.26, 0.66],
+    nn: [0, 1]
+  },
+  {
+    object: 'x5',
+    pp: [0, 1],
+    bp: [0.32, 0.44],
+    np: [0.65, 0.11],
+    pn: [0.70, 0.12],
+    bn: [0.36, 0.46],
+    nn: [0, 1]
+  },
+  {
+    object: 'x6',
+    pp: [0, 1],
+    bp: [0.11, 0.71],
+    np: [0.33, 0.29],
+    pn: [0.81, 0.28],
+    bn: [0.11, 0.73],
+    nn: [0, 1]
+  },
 ]
 
 module.exports = {
+  S,
   IFIS_data,
-  advantages_data,
+  relativeLoss
 }

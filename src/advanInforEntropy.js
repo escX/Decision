@@ -13,10 +13,10 @@ function getAdvanInfoEntropy(data) {
   const entropyDen = objectAmount * objectAmount // 分母
   let entropyNum = 0 // 分子
 
-  data.forEach(item => {
-    const moreBetterAmount = item.moreBetter.length
+  for (let i = 0; i < data.length; i++) {
+    const moreBetterAmount = data[i].moreBetter.length
     entropyNum += moreBetterAmount * (data.length - moreBetterAmount)
-  })
+  }
 
   return [entropyNum, entropyDen]
 }

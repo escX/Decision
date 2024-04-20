@@ -25,8 +25,8 @@ function getConditionProbability(advanMemship, weights) {
   }
 
   return [
-    memshipTotal.div(advanAmount).toNumber(),
-    nonMemshipTotal.div(advanAmount).toNumber()
+    Number(memshipTotal.div(advanAmount).toFixed(4)),
+    Number(nonMemshipTotal.div(advanAmount).toFixed(4))
   ]
 }
 

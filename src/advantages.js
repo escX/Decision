@@ -10,8 +10,7 @@
     }[]
  */
 
-require('dotenv').config()
-const s = Number(process.env.s)
+const { S } = require('../test/test_data')
 
 // 判断 propB 优于 propA 条件：
 // 隶属度: propB >= propA && 非隶属度 propB <= propA
@@ -46,7 +45,7 @@ function getAdvantages(data) {
       const objectB = data[j]
       const betterPropsIndex = getBetterProps(objectA, objectB)
 
-      if (betterPropsIndex.length >= objectA.props.length * s) {
+      if (betterPropsIndex.length >= objectA.props.length * S) {
         moreBetter.push(objectB.object)
       }
     }
