@@ -85,15 +85,21 @@ displayProgress && console.log('---------------------- 决策结果 ------------
 const decision = getDecision(scores)
 console.log(decision)
 
-window.main = {
-  advan,
-  advanExcludeArray,
-  advanInfoEntropy,
-  advanInfoEntropyExcludeArray,
-  importantDegreeArray,
-  weights,
-  conditionProbabilities,
-  expectedLosses,
-  scores,
-  decision
+try {
+  window.data = {
+    IFIS_data,
+    relativeLoss_data,
+    advan,
+    advanExcludeArray,
+    advanInfoEntropy,
+    advanInfoEntropyExcludeArray,
+    importantDegreeArray,
+    weights,
+    conditionProbabilities,
+    expectedLosses,
+    scores,
+    decision,
+  }
+} catch (err) {
+
 }

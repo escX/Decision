@@ -57,7 +57,7 @@ function getStdDevArray(data) {
   const stdDevArray = []
 
   reverseArray(data).forEach(props => {
-    stdDevArray.push(calculateStandardDeviation(props))
+    stdDevArray.push(calculateStandardDeviation(props) / 3)
   })
 
   return stdDevArray
