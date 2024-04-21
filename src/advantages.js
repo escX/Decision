@@ -10,7 +10,7 @@
     }[]
  */
 
-const { S } = require('../test/test_data')
+const { S } = require('../test/data')
 
 // 判断 propB 优于 propA 条件：
 // 隶属度: propB >= propA && 非隶属度 propB <= propA
