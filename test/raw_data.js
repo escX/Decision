@@ -1,5 +1,14 @@
 const { parseRawData, getIFISData, getMeanArray, getStdDevArray, getRelativeLoss } = require('../utils')
 
+// 西格玛参数
+const S = 0.6
+
+// 用于调整隶属度的参数，值越大，最终NEG中的对象越多
+const D = 3
+
+// 排除属性的索引
+const excludePropsIndex = [0]
+
 // 原始数据集数据
 const rawData = `
 1,14.23,1.71,2.43,15.6,127,2.8,3.06,.28,2.29,5.64,1.04,3.92,1065
@@ -182,53 +191,45 @@ const rawData = `
 3,14.13,4.1,2.74,24.5,96,2.05,.76,.56,1.35,9.2,.61,1.6,560
 `
 
-// 参数：平均数，每个属性对应一个
-// const mean = [13, 2.34, 2.37, 19.49, 99.74, 2.3, 2.03, 0.36, 1.59, 5.06, 0.96, 2.61, 746.89]
 
-// 参数：标准差，每个属性对应一个
-// const stdDev = [
-//   0.809542914528517,
-//   1.1140036269797895,
-//   0.2735722944264325,
-//   3.330169757658213,
-//   14.242307673359807,
-//   0.6240905641965366,
-//   0.9960489503792328,
-//   0.12410325988364797,
-//   0.5707488486199377,
-//   2.3117646609525573,
-//   0.2279286065650725,
-//   0.7079932646716006,
-//   314.0216568419877
-// ]
 
-// 排除属性的索引
-const excludePropsIndex = [0]
+
+
+
+
+
+
+
+
+
+
+
+
 
 // 解析后的二维数组
 const dataset = parseRawData(rawData, excludePropsIndex)
 
-// 参数：平均数，每个属性对应一个
-const mean = getMeanArray(dataset)
-
-// 参数：标准差，每个属性对应一个
-const stdDev = getStdDevArray(dataset)
-
 module.exports = {
   IFIS: () => {
+    const mean = getMeanArray(dataset)
+    const stdDev = getStdDevArray(dataset, D)
     const result = getIFISData(dataset, mean, stdDev)
     return result
   },
   mean: () => {
+    // 参数：平均数，每个属性对应一个
     const result = getMeanArray(dataset)
     return result
   },
   stdDev: () => {
-    const result = getStdDevArray(dataset)
+    // 参数：标准差，每个属性对应一个
+    const result = getStdDevArray(dataset, D)
     return result
   },
   relativeLoss: () => {
     const result = getRelativeLoss(dataset.length)
     return result
-  }
+  },
+  D,
+  S
 }

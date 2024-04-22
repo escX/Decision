@@ -1,6 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (process){(function (){
-const { IFIS_data, relativeLoss_data } = require('./test/data')
+const { IFIS_data, relativeLoss_data, S, D } = require('./test/data')
 const { getIFISExcludePropIndex } = require('./utils')
 const getAdvantages = require('./src/advantages')
 const getAdvanInfoEntropy = require('./src/advanInforEntropy')
@@ -89,8 +89,6 @@ console.log(decision)
 
 try {
   window.data = {
-    IFIS_data,
-    relativeLoss_data,
     advan,
     advanExcludeArray,
     advanInfoEntropy,
@@ -101,6 +99,10 @@ try {
     expectedLosses,
     scores,
     decision,
+    IFIS_data,
+    relativeLoss_data,
+    S,
+    D
   }
 } catch (err) {
 
@@ -33348,10 +33350,7 @@ function getWeights(data) {
 module.exports = getWeights
 
 },{}],182:[function(require,module,exports){
-const { IFIS, relativeLoss } = require('./raw_data')
-
-// 西格玛参数
-const S = 0.6
+const { IFIS, relativeLoss, D, S } = require('./raw_data')
 
 // 直觉模糊系统数据
 const IFIS_data = IFIS()
@@ -33360,6 +33359,7 @@ const IFIS_data = IFIS()
 const relativeLoss_data = relativeLoss()
 
 module.exports = {
+  D,
   S,
   IFIS_data,
   relativeLoss_data
@@ -33367,6 +33367,15 @@ module.exports = {
 
 },{"./raw_data":183}],183:[function(require,module,exports){
 const { parseRawData, getIFISData, getMeanArray, getStdDevArray, getRelativeLoss } = require('../utils')
+
+// 西格玛参数
+const S = 0.6
+
+// 用于调整隶属度的参数，值越大，最终NEG中的对象越多
+const D = 3
+
+// 排除属性的索引
+const excludePropsIndex = [0]
 
 // 原始数据集数据
 const rawData = `
@@ -33550,55 +33559,47 @@ const rawData = `
 3,14.13,4.1,2.74,24.5,96,2.05,.76,.56,1.35,9.2,.61,1.6,560
 `
 
-// 参数：平均数，每个属性对应一个
-// const mean = [13, 2.34, 2.37, 19.49, 99.74, 2.3, 2.03, 0.36, 1.59, 5.06, 0.96, 2.61, 746.89]
 
-// 参数：标准差，每个属性对应一个
-// const stdDev = [
-//   0.809542914528517,
-//   1.1140036269797895,
-//   0.2735722944264325,
-//   3.330169757658213,
-//   14.242307673359807,
-//   0.6240905641965366,
-//   0.9960489503792328,
-//   0.12410325988364797,
-//   0.5707488486199377,
-//   2.3117646609525573,
-//   0.2279286065650725,
-//   0.7079932646716006,
-//   314.0216568419877
-// ]
 
-// 排除属性的索引
-const excludePropsIndex = [0]
+
+
+
+
+
+
+
+
+
+
+
+
 
 // 解析后的二维数组
 const dataset = parseRawData(rawData, excludePropsIndex)
 
-// 参数：平均数，每个属性对应一个
-const mean = getMeanArray(dataset)
-
-// 参数：标准差，每个属性对应一个
-const stdDev = getStdDevArray(dataset)
-
 module.exports = {
   IFIS: () => {
+    const mean = getMeanArray(dataset)
+    const stdDev = getStdDevArray(dataset, D)
     const result = getIFISData(dataset, mean, stdDev)
     return result
   },
   mean: () => {
+    // 参数：平均数，每个属性对应一个
     const result = getMeanArray(dataset)
     return result
   },
   stdDev: () => {
-    const result = getStdDevArray(dataset)
+    // 参数：标准差，每个属性对应一个
+    const result = getStdDevArray(dataset, D)
     return result
   },
   relativeLoss: () => {
     const result = getRelativeLoss(dataset.length)
     return result
-  }
+  },
+  D,
+  S
 }
 
 },{"../utils":184}],184:[function(require,module,exports){
@@ -33657,18 +33658,18 @@ function calculateStandardDeviation(data) {
 }
 
 // 根据二维数组，生成标准差
-function getStdDevArray(data) {
+function getStdDevArray(data, d) {
   const stdDevArray = []
 
   reverseArray(data).forEach(props => {
-    stdDevArray.push(calculateStandardDeviation(props) / 3)
+    stdDevArray.push(calculateStandardDeviation(props) / d)
   })
 
   return stdDevArray
 }
 
-// 获取隶属度和非隶属度之和的随机数，在0.7-1.0之间
-function getMemshipSumRand(rest) {
+// 非隶属度 = 1-隶属度-随机数，获取该随机数
+function getDiffRand(rest) {
   const rand = Math.round(Math.random() * rest)
   if (rest == 0) {
     return 0
@@ -33737,7 +33738,7 @@ function getIFISData(dataArray, meanArray, stdDevArray) {
       const restMembership = Number((1 - membership).toFixed(1))
       props.push([
         membership,
-        Number((restMembership - getMemshipSumRand(restMembership * 10)).toFixed(1))
+        Number((restMembership - getDiffRand(restMembership * 10)).toFixed(1))
       ])
     })
 

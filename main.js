@@ -1,4 +1,4 @@
-const { IFIS_data, relativeLoss_data } = require('./test/data')
+const { IFIS_data, relativeLoss_data, S, D } = require('./test/data')
 const { getIFISExcludePropIndex } = require('./utils')
 const getAdvantages = require('./src/advantages')
 const getAdvanInfoEntropy = require('./src/advanInforEntropy')
@@ -87,8 +87,6 @@ console.log(decision)
 
 try {
   window.data = {
-    IFIS_data,
-    relativeLoss_data,
     advan,
     advanExcludeArray,
     advanInfoEntropy,
@@ -99,6 +97,10 @@ try {
     expectedLosses,
     scores,
     decision,
+    IFIS_data,
+    relativeLoss_data,
+    S,
+    D
   }
 } catch (err) {
 

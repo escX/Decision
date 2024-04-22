@@ -53,18 +53,18 @@ function calculateStandardDeviation(data) {
 }
 
 // 根据二维数组，生成标准差
-function getStdDevArray(data) {
+function getStdDevArray(data, d) {
   const stdDevArray = []
 
   reverseArray(data).forEach(props => {
-    stdDevArray.push(calculateStandardDeviation(props) / 3)
+    stdDevArray.push(calculateStandardDeviation(props) / d)
   })
 
   return stdDevArray
 }
 
-// 获取隶属度和非隶属度之和的随机数，在0.7-1.0之间
-function getMemshipSumRand(rest) {
+// 非隶属度 = 1-隶属度-随机数，获取该随机数
+function getDiffRand(rest) {
   const rand = Math.round(Math.random() * rest)
   if (rest == 0) {
     return 0
@@ -133,7 +133,7 @@ function getIFISData(dataArray, meanArray, stdDevArray) {
       const restMembership = Number((1 - membership).toFixed(1))
       props.push([
         membership,
-        Number((restMembership - getMemshipSumRand(restMembership * 10)).toFixed(1))
+        Number((restMembership - getDiffRand(restMembership * 10)).toFixed(1))
       ])
     })
 

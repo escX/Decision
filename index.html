@@ -4,17 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Charts</title>
   <script src="./compiled.main.js"></script>
   <script src="./echarts.min.js"></script>
+  <script src="./chart_render.js"></script>
 </head>
 
 <body>
-  <div>
-    <h4>得分情况</h4>
-    <div id="score"></div>
-  </div>
-
   <div>
     <h4>对象划分域</h4>
     <div id="category"></div>
@@ -22,60 +18,12 @@
 
   <div>
     <h4>方案排序</h4>
-    <div id="sort_object"></div>
+    <div id="sort"></div>
   </div>
 </body>
 
 <script>
-  const sort = window.data.decision.sort;
-  const sortNum = Array(sort.length)
-  sort.forEach((item, index) => {
-    const objIndex = Number(item.replace('x', '')) - 1
-    const number = index + 1
-    sortNum[objIndex] = number
-  })
-
-  const sortObjectChart = echarts.init(document.getElementById('sort_object'), null, {
-    width: 1200,
-    height: 600
-  });
-
-  sortObjectChart.setOption({
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: [
-      {
-        type: 'category',
-        data: Array(sort.length).fill(0).map((_, index) => `x${index + 1}`),
-        axisTick: {
-          alignWithLabel: true
-        }
-      }
-    ],
-    yAxis: [
-      {
-        type: 'value'
-      }
-    ],
-    series: [
-      {
-        name: 'Sort',
-        type: 'bar',
-        barWidth: '60%',
-        data: sortNum
-      }
-    ]
-  })
+  render()
 </script>
 
 </html>
