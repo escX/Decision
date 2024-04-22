@@ -65,10 +65,8 @@ function getStdDevArray(data, d) {
 
 // 非隶属度 = 1-隶属度-随机数，获取该随机数
 function getDiffRand(rest) {
-  const rand = Math.round(Math.random() * rest)
-  if (rest == 0) {
-    return 0
-  }
+  const rand = Math.round(Math.random() / 3 * rest)
+
   return [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].slice(0, rest + 1)[rand]
 }
 

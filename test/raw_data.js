@@ -4,7 +4,7 @@ const { parseRawData, getIFISData, getMeanArray, getStdDevArray, getRelativeLoss
 const S = 0.6
 
 // 用于调整隶属度的参数，值越大，最终NEG中的对象越多
-const D = 3
+const D = 2.1
 
 // 排除属性的索引
 const excludePropsIndex = [0]
