@@ -1,6 +1,5 @@
-function renderCategory() {
+function renderCategory(decision) {
   // 对象划分域
-  const decision = window.data.decision;
   const categoryChart = echarts.init(document.getElementById('category'), null, {
     width: 800,
     height: 600
@@ -47,12 +46,12 @@ function renderCategory() {
         },
       }
     ]
-  })
+  }, true)
 }
 
-function renderSort() {
+function renderSort(decision, s) {
   // 方案排序
-  const sort = window.data.decision.sort;
+  const sort = decision.sort
   const sortNum = Array(sort.length)
   sort.forEach((item, index) => {
     const objIndex = Number(item.replace('x', '')) - 1
@@ -62,48 +61,35 @@ function renderSort() {
 
   const sortChart = echarts.init(document.getElementById('sort'), null, {
     width: 1200,
-    height: 600
+    height: 400
   });
 
   sortChart.setOption({
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      }
+    xAxis: {
+      type: 'category',
+      data: Array(sort.length).fill(0).map((_, index) => `x${index + 1}`)
     },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
+    yAxis: {
+      type: 'value'
     },
-    xAxis: [
-      {
-        type: 'category',
-        data: Array(sort.length).fill(0).map((_, index) => `x${index + 1}`),
-        axisTick: {
-          alignWithLabel: true
-        }
-      }
-    ],
-    yAxis: [
-      {
-        type: 'value'
-      }
-    ],
     series: [
       {
-        name: 'Sort',
-        type: 'bar',
-        barWidth: '60%',
-        data: sortNum
+        data: sortNum,
+        type: 'line',
+        itemStyle: {
+          color: ['#ff4d4f', '#ff7a45', '#ffa940', '#ffc53d', '#ad8b00', '#5b8c00', '#36cfc9', '#4096ff', '#597ef7', '#9254de', '#f759ab'][s * 10]
+        }
       }
     ]
-  })
+  }, true)
 }
 
-function render() {
-  renderCategory()
-  renderSort()
+function handleSaveS() {
+  const inputElement = document.getElementById('s_input')
+  const s = Number(inputElement.value)
+  const data = makeDecision(s)
+  console.log(data)
+
+  renderCategory(data.decision)
+  renderSort(data.decision, s)
 }

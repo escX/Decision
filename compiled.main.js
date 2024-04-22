@@ -1,6 +1,5 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-(function (process){(function (){
-const { IFIS_data, relativeLoss_data, S, D } = require('./test/data')
+const { IFIS_data, relativeLoss_data, D } = require('./test/data')
 const { getIFISExcludePropIndex } = require('./utils')
 const getAdvantages = require('./src/advantages')
 const getAdvanInfoEntropy = require('./src/advanInforEntropy')
@@ -11,84 +10,64 @@ const getExpectedLosses = require('./src/expectedLoss')
 const getScores = require('./src/score')
 const getDecision = require('./src/decision')
 
-const displayProgress = process.argv.slice(2)[0] === '--progress'
+window.makeDecision = function (S) {
+  // ---------------------- 优势类 ----------------------
+  const advan = getAdvantages(IFIS_data, S)
 
-displayProgress && console.log('---------------------- 优势类 ----------------------')
-const advan = getAdvantages(IFIS_data)
-displayProgress && console.log('包含所有属性时的优势类：\n', advan)
-
-const advanExcludeArray = []
-for (let i = 0; i < IFIS_data[0].props.length; i++) {
-  const advanExclude = getAdvantages(getIFISExcludePropIndex(IFIS_data, i))
-  advanExcludeArray.push(advanExclude)
-  displayProgress && console.log(`排除第${i + 1}个属性时的优势类：\n`, advanExclude)
-}
-
-
-displayProgress && console.log('---------------------- 优势信息熵 ----------------------')
-const advanInfoEntropy = getAdvanInfoEntropy(advan)
-displayProgress && console.log('包含所有属性时的优势信息熵：', advanInfoEntropy)
-
-const advanInfoEntropyExcludeArray = []
-for (let i = 0; i < advanExcludeArray.length; i++) {
-  const advanInfoEntropyExclude = getAdvanInfoEntropy(advanExcludeArray[i])
-  advanInfoEntropyExcludeArray.push(advanInfoEntropyExclude)
-  displayProgress && console.log(`排除第${i + 1}个属性时的优势信息熵：`, advanInfoEntropyExclude)
-}
-
-
-displayProgress && console.log('---------------------- 属性重要度 ----------------------')
-const importantDegreeArray = []
-for (let i = 0; i < advanInfoEntropyExcludeArray.length; i++) {
-  const importantDegree = getImportantDegree(advanInfoEntropy, advanInfoEntropyExcludeArray[i])
-  importantDegreeArray.push(importantDegree)
-  displayProgress && console.log(`第${i + 1}个属性的重要度：`, importantDegree)
-}
-
-
-displayProgress && console.log('---------------------- 属性权重 ----------------------')
-const weights = getWeights(importantDegreeArray)
-for (let i = 0; i < weights.length; i++) {
-  displayProgress && console.log(`第${i + 1}个属性的权重：`, weights[i])
-}
-
-
-displayProgress && console.log('---------------------- 条件概率 ----------------------')
-const conditionProbabilities = []
-for (let i = 0; i < advan.length; i++) {
-  const advanArray = advan[i].moreBetter
-  const advanObject = advan[i].object
-  const advanMemship = []
-
-  for (let j = 0; j < advanArray.length; j++) {
-    const object = IFIS_data.find(item => item.object === advanArray[j])
-    advanMemship.push(object.props)
+  const advanExcludeArray = []
+  for (let i = 0; i < IFIS_data[0].props.length; i++) {
+    const advanExclude = getAdvantages(getIFISExcludePropIndex(IFIS_data, i), S)
+    advanExcludeArray.push(advanExclude)
   }
 
-  conditionProbabilities.push({
-    object: advanObject,
-    probability: getConditionProbability(advanMemship, weights)
-  })
-}
-displayProgress && console.log(conditionProbabilities)
+  // ---------------------- 优势信息熵 ----------------------
+  const advanInfoEntropy = getAdvanInfoEntropy(advan)
 
+  const advanInfoEntropyExcludeArray = []
+  for (let i = 0; i < advanExcludeArray.length; i++) {
+    const advanInfoEntropyExclude = getAdvanInfoEntropy(advanExcludeArray[i])
+    advanInfoEntropyExcludeArray.push(advanInfoEntropyExclude)
+  }
 
-displayProgress && console.log('---------------------- 期望损失 ----------------------')
-const expectedLosses = getExpectedLosses(relativeLoss_data, conditionProbabilities)
-displayProgress && console.log(expectedLosses)
+  // ---------------------- 属性重要度 ----------------------
+  const importantDegreeArray = []
+  for (let i = 0; i < advanInfoEntropyExcludeArray.length; i++) {
+    const importantDegree = getImportantDegree(advanInfoEntropy, advanInfoEntropyExcludeArray[i])
+    importantDegreeArray.push(importantDegree)
+  }
 
+  // ---------------------- 属性权重 ----------------------
+  const weights = getWeights(importantDegreeArray)
 
-displayProgress && console.log('---------------------- 得分函数 ----------------------')
-const scores = getScores(expectedLosses)
-displayProgress && console.log(scores)
+  // ---------------------- 条件概率 ----------------------
+  const conditionProbabilities = []
+  for (let i = 0; i < advan.length; i++) {
+    const advanArray = advan[i].moreBetter
+    const advanObject = advan[i].object
+    const advanMemship = []
 
+    for (let j = 0; j < advanArray.length; j++) {
+      const object = IFIS_data.find(item => item.object === advanArray[j])
+      advanMemship.push(object.props)
+    }
 
-displayProgress && console.log('---------------------- 决策结果 ----------------------')
-const decision = getDecision(scores)
-console.log(decision)
+    conditionProbabilities.push({
+      object: advanObject,
+      probability: getConditionProbability(advanMemship, weights)
+    })
+  }
 
-try {
-  window.data = {
+  // ---------------------- 期望损失 ----------------------
+  const expectedLosses = getExpectedLosses(relativeLoss_data, conditionProbabilities)
+
+  // ---------------------- 得分函数 ----------------------
+  const scores = getScores(expectedLosses)
+
+  // ---------------------- 决策结果 ----------------------
+  const decision = getDecision(scores)
+
+  // ---------------------- 返回数据 ----------------------
+  return {
     advan,
     advanExcludeArray,
     advanInfoEntropy,
@@ -101,15 +80,11 @@ try {
     decision,
     IFIS_data,
     relativeLoss_data,
-    S,
     D
   }
-} catch (err) {
-
 }
 
-}).call(this)}).call(this,require('_process'))
-},{"./src/advanInforEntropy":174,"./src/advantages":175,"./src/conditionProbability":176,"./src/decision":177,"./src/expectedLoss":178,"./src/importantDegree":179,"./src/score":180,"./src/weights":181,"./test/data":182,"./utils":184,"_process":124}],2:[function(require,module,exports){
+},{"./src/advanInforEntropy":174,"./src/advantages":175,"./src/conditionProbability":176,"./src/decision":177,"./src/expectedLoss":178,"./src/importantDegree":179,"./src/score":180,"./src/weights":181,"./test/data":182,"./utils":184}],2:[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('bn.js');
@@ -33023,8 +32998,6 @@ module.exports = getAdvanInfoEntropy
     }[]
  */
 
-const { S } = require('../test/data')
-
 // 判断 propB 优于 propA 条件：
 // 隶属度: propB >= propA && 非隶属度 propB <= propA
 function isBetterProp(propA, propB) {
@@ -33047,7 +33020,7 @@ function getBetterProps(objectA, objectB) {
 }
 
 // 遍历所有数据，判断 B 相对于 A 优势属性的数量，大于等于 s * 属性数量，则 B 优于 A
-function getAdvantages(data) {
+function getAdvantages(data, S) {
   const res = []
 
   for (let i = 0; i < data.length; i++) {
@@ -33071,7 +33044,7 @@ function getAdvantages(data) {
 
 module.exports = getAdvantages
 
-},{"../test/data":182}],176:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 /**
  * 计算条件概率
     input1(对象优势类的隶属度和非隶属度): [number, number][][]
