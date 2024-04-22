@@ -2,12 +2,16 @@ function renderCategory() {
   // 对象划分域
   const decision = window.data.decision;
   const categoryChart = echarts.init(document.getElementById('category'), null, {
-    width: 600,
-    height: 450
+    width: 800,
+    height: 600
   });
   categoryChart.setOption({
     tooltip: {
       trigger: 'item'
+    },
+    legend: {
+      top: '2%',
+      left: 'center',
     },
     series: [
       {
@@ -15,16 +19,25 @@ function renderCategory() {
         radius: '50%',
         radius: ['40%', '70%'],
         avoidLabelOverlap: false,
+        padAngle: 3,
         itemStyle: {
           borderRadius: 10,
           borderColor: '#fff',
-          borderWidth: 2
+          borderWidth: 2,
+          shadowColor: 'rgba(0, 0, 0, 0.3)',
+          shadowBlur: 10,
+          shadowOffsetY: 5
         },
         data: [
-          { value: decision.pos.length, name: `POS (${decision.pos.length})` },
-          { value: decision.neg.length, name: `NEG (${decision.neg.length})` },
-          { value: decision.bnd.length, name: `BND (${decision.bnd.length})` },
+          { value: decision.pos.length, name: `POS(X)` },
+          { value: decision.bnd.length, name: `BND(X)` },
+          { value: decision.neg.length, name: `NEG(X)` },
         ],
+        label: {
+          formatter: '{b}\n{c}个对象 ({d}%)',
+          fontSize: 14,
+          lineHeight: 24,
+        },
         emphasis: {
           itemStyle: {
             shadowBlur: 10,
