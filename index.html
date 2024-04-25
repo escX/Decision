@@ -16,13 +16,39 @@
   </div>
 
   <div>
-    <h4>方案排序</h4>
-    <div id="sort"></div>
+    <h4>划分域对比</h4>
+    <div id="category_compare"></div>
   </div>
 
   <div>
-    <input type="number" id="s_input" min="0" max="1" step="0.1" value="0.1">
-    <button onclick="handleSaveS()">执行</button>
+    <h4>方案排序（柱状图）</h4>
+    <div id="sort_category"></div>
+  </div>
+
+  <div>
+    <h4>方案排序（折线图）</h4>
+    <div id="sort_line"></div>
+  </div>
+
+  <div style="border: 1px solid #999;padding: 16px 24px; border-radius: 6px;width: 450px;margin-top:50px;">
+    <div>
+      <span style="width: 80px;display: inline-block;">σ</span>
+      <input type="number" id="s_input" min="0" max="1" step="0.1" value="0.1" style="width: 100px">
+    </div>
+    <div style="margin-top: 6px;">
+      <span style="width: 80px;display: inline-block;">最优对象</span>
+      <input type="number" id="best_input" min="1" step="1" style="width: 100px">
+    </div>
+    <div style="margin-top: 6px;">
+      <span style="width: 80px;display: inline-block;"></span>
+      <button onclick="execute([], '')">执行</button>
+    </div>
+    <div style="margin-top: 6px;">
+      <span style="width: 80px;display: inline-block;"></span>
+      <button onclick="compareL()">对比Liang的方法</button>
+      <button onclick="compareX()">对比Xin的方法</button>
+      <button onclick="cancelCompare()">取消对比</button>
+    </div>
   </div>
 </body>
 
