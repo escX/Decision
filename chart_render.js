@@ -83,7 +83,7 @@ function renderCategoryCompareD2(decision) {
     },
     xAxis: {
       type: 'category',
-      data: ['本文方法', 'Liang的方法', 'Xin的方法']
+      data: ['本文方法', 'Liang等的方法', 'Liu等的方法']
     },
     series: [
       {
@@ -163,7 +163,7 @@ function renderCategoryCompareD3(decision) {
     yAxis3D: {
       name: '',
       type: 'category',
-      data: ['本文方法', 'Liang的方法', 'Xin的方法']
+      data: ['本文方法', 'Liang等的方法', 'Liu等的方法']
     },
     zAxis3D: {
       name: '数量',
@@ -208,7 +208,7 @@ function renderCategoryCompareD3(decision) {
             fontSize: 14,
             color: '#000'
           },
-          formatter: function(params) {
+          formatter: function (params) {
             return params.value[2]
           }
         }
@@ -460,12 +460,12 @@ function execute(compareData, seriesName) {
 
 function compareL() {
   const swapData = pairElements(getRandomNumbers(150), 30)
-  execute(swapData, "Liang的方法")
+  execute(swapData, "Liang等的方法")
 }
 
 function compareX() {
   const swapData = pairElements(getRandomNumbers(100), 20)
-  execute(swapData, "Xin的方法")
+  execute(swapData, "Liu的方法")
 }
 
 function cancelCompare() {
