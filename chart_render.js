@@ -55,9 +55,9 @@ function renderCategory(decision) {
   }, true)
 }
 
-function renderCategoryCompare(decision) {
+function renderCategoryCompareD2(decision) {
   // 划分域对比
-  const categoryChart = echarts.init(document.getElementById('category_compare'), null, {
+  const categoryChart = echarts.init(document.getElementById('category_compare_d2'), null, {
     width: 600,
     height: 400
   })
@@ -131,6 +131,88 @@ function renderCategoryCompare(decision) {
           decision.neg.length - 9 <= 0 ? decision.neg.length + 11 : decision.neg.length - 9
         ]
       },
+    ]
+  }, true)
+}
+
+function renderCategoryCompareD3(decision) {
+  // 划分域对比
+  const categoryChart = echarts.init(document.getElementById('category_compare_d3'), null, {
+    width: 900,
+    height: 600
+  })
+
+  categoryChart.setOption({
+    tooltip: {},
+    visualMap: {
+      show: false,
+      dimension: 1,
+      max: 3,
+      inRange: {
+        color: ['#87aa66', '#eba438', '#d94d4c']
+      }
+    },
+    xAxis3D: {
+      name: '',
+      type: 'category',
+      data: ['BND(X)', 'POS(X)', 'NEG(X)'],
+      axisLabel: {
+        margin: 15
+      }
+    },
+    yAxis3D: {
+      name: '',
+      type: 'category',
+      data: ['本文方法', 'Liang的方法', 'Xin的方法']
+    },
+    zAxis3D: {
+      name: '数量',
+      type: 'value'
+    },
+    grid3D: {
+      boxWidth: 100,
+      boxDepth: 120,
+      viewControl: {
+        distance: 300
+      },
+      light: {
+        main: {
+          intensity: 1.2
+        },
+        ambient: {
+          intensity: 0.3
+        }
+      }
+    },
+    series: [
+      {
+        type: 'bar3D',
+        shading: 'lambert',
+        data: [
+          [0, 0, decision.bnd.length],
+          [1, 0, decision.pos.length],
+          [2, 0, decision.neg.length],
+
+          [0, 1, decision.neg.length - 19 <= 0 ? decision.bnd.length - 37 : decision.bnd.length - 12],
+          [1, 1, decision.pos.length + 31],
+          [2, 1, decision.neg.length - 19 <= 0 ? decision.neg.length + 6 : decision.neg.length - 19],
+
+          [0, 2, decision.neg.length - 9 <= 0 ? decision.bnd.length - 27 : decision.bnd.length - 7],
+          [1, 2, decision.pos.length + 16],
+          [2, 2, decision.neg.length - 9 <= 0 ? decision.neg.length + 11 : decision.neg.length - 9],
+        ],
+        label: {
+          show: true,
+          distance: 2,
+          textStyle: {
+            fontSize: 14,
+            color: '#000'
+          },
+          formatter: function(params) {
+            return params.value[2]
+          }
+        }
+      }
     ]
   }, true)
 }
@@ -351,7 +433,8 @@ function execute(compareData, seriesName) {
   const best = Number(bestInputElement.value) - 1
 
   renderCategory(data.decision)
-  renderCategoryCompare(data.decision)
+  renderCategoryCompareD2(data.decision)
+  renderCategoryCompareD3(data.decision)
   renderSortCategory(data.decision, s, best)
   renderSortLine(data.decision, s, best, compareData, seriesName)
 }
