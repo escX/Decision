@@ -229,7 +229,7 @@ function renderSortCategory(decision, s, best) {
 
   if (best >= 0) {
     const OneIndex = sortNum.findIndex(item => item === 1)
-    swap(sortNum, best, OneIndex)
+    swap(sortNum, [best, OneIndex])
   }
 
   const sortChart = echarts.init(document.getElementById('sort_category'), null, {
@@ -284,14 +284,13 @@ function renderSortLine(decision, s, best, compareData, seriesName) {
   const sortNum = Array(sort.length)
   sort.forEach((item, index) => {
     const sortIndex = Number(item.replace('x', '')) - 1
-    const number = index + 1
-    sortNum[sortIndex] = number
+    sortNum[sortIndex] = index + 1
   })
 
   // 设置最优对象
   if (best >= 0) {
     const OneIndex = sortNum.findIndex(item => item === 1)
-    swap(sortNum, best, OneIndex)
+    swap(sortNum, [best, OneIndex])
   }
 
   // 设置对比数据
@@ -320,9 +319,15 @@ function renderSortLine(decision, s, best, compareData, seriesName) {
     }
   ]
 
-  const compareSortNum = [...sortNum]
-  compareData.forEach(item => {
-    swap(compareSortNum, ...item)
+  const compareSort = [...sort]
+  compareData.forEach((item) => {
+    swap(compareSort, item)
+  })
+
+  const compareSortNum = Array(compareSort.length)
+  compareSort.forEach((item, index) => {
+    const sortIndex = Number(item.replace('x', '')) - 1
+    compareSortNum[sortIndex] = index + 1
   })
 
   if (compareData.length > 0) {
@@ -391,7 +396,8 @@ function renderSortLine(decision, s, best, compareData, seriesName) {
   }, true)
 }
 
-function swap(arr, index1, index2) {
+function swap(arr, indexArray) {
+  const [index1, index2] = indexArray
   const temp = arr[index1]
   arr[index1] = arr[index2]
   arr[index2] = temp
@@ -399,8 +405,8 @@ function swap(arr, index1, index2) {
 
 function getRandomNumbers(amount) {
   const result = []
-  const min = 2
-  const max = 178
+  const min = 1
+  const max = 177
 
   while (result.length < amount) {
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min
@@ -413,14 +419,27 @@ function getRandomNumbers(amount) {
   return result.sort((a, b) => a - b)
 }
 
-function pairElements(arr) {
-  const result = []
+function pairElements(inputArray, indexDistance = 5) {
+  const result = [];
+  const usedIndices = new Set();
 
-  for (let i = 0; i < arr.length; i += 2) {
-    result.push([arr[i], arr[i + 1]])
+  for (let i = 0; i < inputArray.length; i++) {
+    if (usedIndices.has(i)) {
+      continue;
+    }
+
+    const minIndex = i + 1;
+    const maxIndex = Math.min(i + indexDistance, inputArray.length - 1);
+    const randomIndex = Math.floor(Math.random() * (maxIndex - minIndex + 1)) + minIndex;
+
+    if (!usedIndices.has(randomIndex)) {
+      result.push([inputArray[i], inputArray[randomIndex]]);
+      usedIndices.add(i);
+      usedIndices.add(randomIndex);
+    }
   }
 
-  return result
+  return result;
 }
 
 function execute(compareData, seriesName) {
@@ -440,12 +459,12 @@ function execute(compareData, seriesName) {
 }
 
 function compareL() {
-  const swapData = pairElements(getRandomNumbers(100))
+  const swapData = pairElements(getRandomNumbers(150), 30)
   execute(swapData, "Liang的方法")
 }
 
 function compareX() {
-  const swapData = pairElements(getRandomNumbers(80))
+  const swapData = pairElements(getRandomNumbers(100), 20)
   execute(swapData, "Xin的方法")
 }
 
