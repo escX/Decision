@@ -1,4 +1,3 @@
-const { IFIS_data, relativeLoss_data, compare_data, D } = require('./test/data')
 const { getIFISExcludePropIndex } = require('./utils')
 const getAdvantages = require('./src/advantages')
 const getAdvanInfoEntropy = require('./src/advanInforEntropy')
@@ -9,7 +8,7 @@ const getExpectedLosses = require('./src/expectedLoss')
 const getScores = require('./src/score')
 const getDecision = require('./src/decision')
 
-window.makeDecision = function (S) {
+function makeDecision(S, D, IFIS_data, relativeLoss_data) {
   // ---------------------- 优势类 ----------------------
   const advan = getAdvantages(IFIS_data, S)
 
@@ -79,8 +78,11 @@ window.makeDecision = function (S) {
     decision,
     IFIS_data,
     relativeLoss_data,
-    compare_data,
     D,
-    S
+    S,
   }
+}
+
+module.exports = {
+  makeDecision,
 }

@@ -278,7 +278,7 @@ function renderSortCategory(decision, s, best) {
   }, true)
 }
 
-function renderSortLine(decision, s, best, existCompareData, compareData, seriesName) {
+function renderSortLine(decision, s, best, compareData, seriesName) {
   // 方案排序折线图
   const sort = decision.sort
   const sortNum = Array(sort.length)
@@ -313,25 +313,18 @@ function renderSortLine(decision, s, best, existCompareData, compareData, series
   let compareSortNum = Array(compareSort.length)
   let isDataError = false
 
-  if (existCompareData.length > 0) {
-    compareSortNum = existCompareData
-  } else {
-    try {
-      isDataError = false
-      compareSort.forEach((item, index) => {
-        const sortIndex = Number(item.replace('x', '')) - 1
-        compareSortNum[sortIndex] = index + 1
-      })
-
-    } catch (error) {
-      isDataError = true
-      alert('生成数据超出范围，请重试')
-    }
+  try {
+    isDataError = false
+    compareSort.forEach((item, index) => {
+      const sortIndex = Number(item.replace('x', '')) - 1
+      compareSortNum[sortIndex] = index + 1
+    })
+  } catch (error) {
+    isDataError = true
+    alert('生成数据超出范围，请重试')
   }
 
   if (compareData.length > 0 && !isDataError) {
-    console.log(seriesName, compareSortNum)
-
     series = [
       {
         name: '本文方法',
@@ -470,16 +463,32 @@ function execute(compareData, seriesName) {
   renderCategoryCompareD2(data.decision)
   renderCategoryCompareD3(data.decision)
   renderSortCategory(data.decision, s, best)
-  renderSortLine(data.decision, s, best, data.compare_data, compareData, seriesName)
+  renderSortLine(data.decision, s, best, compareData, seriesName)
 }
 
-function compareL() {
-  const swapData = pairElements(getRandomNumbers(150), 30)
+function compareLiang() {
+  let swapData = []
+
+  if (window.compare_liang && window.compare_liang.length > 0) {
+    swapData = window.compare_liang
+  } else {
+    swapData = pairElements(getRandomNumbers(150), 30)
+  }
+
+  console.log("Liang等的方法", swapData)
   execute(swapData, "Liang等的方法")
 }
 
-function compareX() {
-  const swapData = pairElements(getRandomNumbers(100), 20)
+function compareLiu() {
+  let swapData = []
+
+  if (window.compare_liu && window.compare_liu.length > 0) {
+    swapData = window.compare_liu
+  } else {
+    swapData = pairElements(getRandomNumbers(100), 20)
+  }
+
+  console.log("Liu等的方法", swapData)
   execute(swapData, "Liu等的方法")
 }
 

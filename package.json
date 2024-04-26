@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "gen": "npx run-func ./test/raw_data.js",
-    "compile": "browserify main.js -o compiled.main.js"
+    "compile": "browserify main_generate.js -o compiled.main.js",
+    "compile:restore": "browserify main_restore.js -o compiled.main.js"
   },
   "main": "main.js",
   "dependencies": {
-    "decimal.js": "^3.0.0",
-    "run-func": "^3.0.0"
+    "decimal.js": "^3.0.0"
   },
   "devDependencies": {
-    "browserify": "^17.0.0"
+    "browserify": "^17.0.0",
+    "run-func": "^3.0.0"
   }
 }
