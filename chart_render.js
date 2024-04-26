@@ -278,7 +278,7 @@ function renderSortCategory(decision, s, best) {
   }, true)
 }
 
-function renderSortLine(decision, s, best, compareData, seriesName) {
+function renderSortLine(decision, s, best, existCompareData, compareData, seriesName) {
   // 方案排序折线图
   const sort = decision.sort
   const sortNum = Array(sort.length)
@@ -301,20 +301,6 @@ function renderSortLine(decision, s, best, compareData, seriesName) {
       type: 'line',
       itemStyle: {
         color: ['#ff4d4f', '#ff7a45', '#ffa940', '#ffc53d', '#ad8b00', '#5b8c00', '#36cfc9', '#4096ff', '#597ef7', '#9254de', '#f759ab'][s * 10]
-      },
-      markPoint: {
-        symbol: 'reat',
-        symbolSize: [60, 30],
-        symbolOffset: ['55%', '-55%'],
-        label: {
-          formatter: 'X: {b}\nY: 1',
-          verticalAlign: 'middle',
-          align: 'left',
-          offset: [-20, 2]
-        },
-        data: [
-          { name: decision.sort[0], type: 'min' },
-        ],
       }
     }
   ]
@@ -324,13 +310,28 @@ function renderSortLine(decision, s, best, compareData, seriesName) {
     swap(compareSort, item)
   })
 
-  const compareSortNum = Array(compareSort.length)
-  compareSort.forEach((item, index) => {
-    const sortIndex = Number(item.replace('x', '')) - 1
-    compareSortNum[sortIndex] = index + 1
-  })
+  let compareSortNum = Array(compareSort.length)
+  let isDataError = false
 
-  if (compareData.length > 0) {
+  if (existCompareData.length > 0) {
+    compareSortNum = existCompareData
+  } else {
+    try {
+      isDataError = false
+      compareSort.forEach((item, index) => {
+        const sortIndex = Number(item.replace('x', '')) - 1
+        compareSortNum[sortIndex] = index + 1
+      })
+
+    } catch (error) {
+      isDataError = true
+      alert('生成数据超出范围，请重试')
+    }
+  }
+
+  if (compareData.length > 0 && !isDataError) {
+    console.log(seriesName, compareSortNum)
+
     series = [
       {
         name: '本文方法',
@@ -338,6 +339,20 @@ function renderSortLine(decision, s, best, compareData, seriesName) {
         type: 'line',
         itemStyle: {
           color: ['#ff4d4f', '#ff7a45', '#ffa940', '#ffc53d', '#ad8b00', '#5b8c00', '#36cfc9', '#4096ff', '#597ef7', '#9254de', '#f759ab'][s * 10]
+        },
+        markPoint: {
+          symbol: 'reat',
+          symbolSize: [60, 30],
+          symbolOffset: ['55%', '-55%'],
+          label: {
+            formatter: 'X: {b}\nY: 1',
+            verticalAlign: 'middle',
+            align: 'left',
+            offset: [-20, 2]
+          },
+          data: [
+            { name: decision.sort[0], type: 'min' },
+          ],
         },
       },
       {
@@ -455,7 +470,7 @@ function execute(compareData, seriesName) {
   renderCategoryCompareD2(data.decision)
   renderCategoryCompareD3(data.decision)
   renderSortCategory(data.decision, s, best)
-  renderSortLine(data.decision, s, best, compareData, seriesName)
+  renderSortLine(data.decision, s, best, data.compare_data, compareData, seriesName)
 }
 
 function compareL() {
@@ -465,7 +480,7 @@ function compareL() {
 
 function compareX() {
   const swapData = pairElements(getRandomNumbers(100), 20)
-  execute(swapData, "Liu的方法")
+  execute(swapData, "Liu等的方法")
 }
 
 function cancelCompare() {

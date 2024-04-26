@@ -1,4 +1,4 @@
-const { IFIS_data, relativeLoss_data, D } = require('./test/data')
+const { IFIS_data, relativeLoss_data, compare_data, D } = require('./test/data')
 const { getIFISExcludePropIndex } = require('./utils')
 const getAdvantages = require('./src/advantages')
 const getAdvanInfoEntropy = require('./src/advanInforEntropy')
@@ -79,6 +79,8 @@ window.makeDecision = function (S) {
     decision,
     IFIS_data,
     relativeLoss_data,
-    D
+    compare_data,
+    D,
+    S
   }
 }

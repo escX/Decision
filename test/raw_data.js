@@ -1,8 +1,5 @@
 const { parseRawData, getIFISData, getMeanArray, getStdDevArray, getRelativeLoss } = require('../utils')
 
-// 西格玛参数
-const S = 0.6
-
 // 用于调整隶属度的参数，值越大，最终NEG中的对象越多
 const D = 2.1
 
@@ -230,6 +227,5 @@ module.exports = {
     const result = getRelativeLoss(dataset.length)
     return result
   },
-  D,
-  S
+  D
 }
