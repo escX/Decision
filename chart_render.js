@@ -4,6 +4,7 @@ function renderCategory(decision) {
     width: 700,
     height: 500
   });
+
   categoryChart.setOption({
     tooltip: {
       trigger: 'item'
@@ -55,7 +56,7 @@ function renderCategory(decision) {
   }, true)
 }
 
-function renderCategoryCompareD2(decision) {
+function renderCategoryCompareD2(decision, LiangData, WangData) {
   // 划分域对比
   const categoryChart = echarts.init(document.getElementById('category_compare_d2'), null, {
     width: 600,
@@ -83,7 +84,7 @@ function renderCategoryCompareD2(decision) {
     },
     xAxis: {
       type: 'category',
-      data: ['本文方法', 'Liang等的方法', 'Liu等的方法']
+      data: ['本文方法', 'Liang等的方法', 'Wang等的方法']
     },
     series: [
       {
@@ -97,8 +98,8 @@ function renderCategoryCompareD2(decision) {
         },
         data: [
           decision.pos.length,
-          decision.pos.length + 31,
-          decision.pos.length + 16
+          LiangData.pos,
+          WangData.pos,
         ]
       },
       {
@@ -112,8 +113,8 @@ function renderCategoryCompareD2(decision) {
         },
         data: [
           decision.bnd.length,
-          decision.neg.length - 19 <= 0 ? decision.bnd.length - 37 : decision.bnd.length - 12,
-          decision.neg.length - 9 <= 0 ? decision.bnd.length - 27 : decision.bnd.length - 7
+          LiangData.bnd,
+          WangData.bnd
         ]
       },
       {
@@ -127,15 +128,15 @@ function renderCategoryCompareD2(decision) {
         },
         data: [
           decision.neg.length,
-          decision.neg.length - 19 <= 0 ? decision.neg.length + 6 : decision.neg.length - 19,
-          decision.neg.length - 9 <= 0 ? decision.neg.length + 11 : decision.neg.length - 9
+          LiangData.neg,
+          WangData.neg
         ]
       },
     ]
   }, true)
 }
 
-function renderCategoryCompareD3(decision) {
+function renderCategoryCompareD3(decision, LiangData, WangData) {
   // 划分域对比
   const categoryChart = echarts.init(document.getElementById('category_compare_d3'), null, {
     width: 900,
@@ -163,7 +164,7 @@ function renderCategoryCompareD3(decision) {
     yAxis3D: {
       name: '',
       type: 'category',
-      data: ['本文方法', 'Liang等的方法', 'Liu等的方法']
+      data: ['本文方法', 'Liang等的方法', 'Wang等的方法']
     },
     zAxis3D: {
       name: '数量',
@@ -193,13 +194,13 @@ function renderCategoryCompareD3(decision) {
           [1, 0, decision.pos.length],
           [2, 0, decision.neg.length],
 
-          [0, 1, decision.neg.length - 19 <= 0 ? decision.bnd.length - 37 : decision.bnd.length - 12],
-          [1, 1, decision.pos.length + 31],
-          [2, 1, decision.neg.length - 19 <= 0 ? decision.neg.length + 6 : decision.neg.length - 19],
+          [0, 1, LiangData.bnd],
+          [1, 1, LiangData.pos],
+          [2, 1, LiangData.neg],
 
-          [0, 2, decision.neg.length - 9 <= 0 ? decision.bnd.length - 27 : decision.bnd.length - 7],
-          [1, 2, decision.pos.length + 16],
-          [2, 2, decision.neg.length - 9 <= 0 ? decision.neg.length + 11 : decision.neg.length - 9],
+          [0, 2, WangData.bnd],
+          [1, 2, WangData.pos],
+          [2, 2, WangData.neg],
         ],
         label: {
           show: true,
@@ -404,6 +405,16 @@ function renderSortLine(decision, s, best, compareData, seriesName) {
   }, true)
 }
 
+function getCompareCategory(pos, bnd, neg) {
+  const posDiff = Math.floor(Math.random() * (pos - 1)) + 1
+  const bndDiff = Math.floor(Math.random() * ((bnd / 2) - 1)) + 1
+  return {
+    pos: pos - posDiff,
+    bnd: bnd - bndDiff,
+    neg: neg + posDiff + bndDiff,
+  }
+}
+
 function swap(arr, indexArray) {
   const [index1, index2] = indexArray
   const temp = arr[index1]
@@ -459,9 +470,36 @@ function execute(compareData, seriesName) {
   const bestInputElement = document.getElementById('best_input')
   const best = Number(bestInputElement.value) - 1
 
+  // 生成划分域对比数据
+  const { pos, bnd, neg } = data.decision
+  const { pos: posLiang, bnd: bndLiang, neg: negLiang } = getCompareCategory(pos.length, bnd.length, neg.length)
+  const { pos: posWang, bnd: bndWang, neg: negWang } = getCompareCategory(pos.length, bnd.length, neg.length)
+  let isDataError = false
+  if ([posLiang, bndLiang, negLiang, posWang, bndWang, negWang].some(item => item <= 0)) {
+    isDataError = true
+    alert('生成数据超出范围，请重试')
+  }
+
+  const LiangData = (window.category_liang ?? []).find(item => item.s === s)?.data
+  const WangData = (window.category_wang ?? []).find(item => item.s === s)?.data
+
+  const usCategory = { pos: pos.length, bnd: bnd.length, neg: neg.length }
+  const LiangCategory = !!LiangData ? LiangData : { pos: posLiang, bnd: bndLiang, neg: negLiang }
+  const WangCategory = !!WangData ? WangData : { pos: posWang, bnd: bndWang, neg: negWang }
+
+  console.log('Liang等的划分域', LiangCategory)
+  console.log('Wang等的划分域', WangCategory)
+
   renderCategory(data.decision)
-  renderCategoryCompareD2(data.decision)
-  renderCategoryCompareD3(data.decision)
+  renderCategoryCompareD2(
+    data.decision,
+    isDataError ? usCategory : LiangCategory,
+    isDataError ? usCategory : WangCategory
+  )
+  renderCategoryCompareD3(data.decision,
+    isDataError ? usCategory : LiangCategory,
+    isDataError ? usCategory : WangCategory
+  )
   renderSortCategory(data.decision, s, best)
   renderSortLine(data.decision, s, best, compareData, seriesName)
 }
@@ -469,8 +507,8 @@ function execute(compareData, seriesName) {
 function compareLiang() {
   let swapData = []
 
-  if (window.compare_liang && window.compare_liang.length > 0) {
-    swapData = window.compare_liang
+  if (window.sort_liang && window.sort_liang.length > 0) {
+    swapData = window.sort_liang
   } else {
     swapData = pairElements(getRandomNumbers(150), 30)
   }
@@ -479,17 +517,17 @@ function compareLiang() {
   execute(swapData, "Liang等的方法")
 }
 
-function compareLiu() {
+function compareWang() {
   let swapData = []
 
-  if (window.compare_liu && window.compare_liu.length > 0) {
-    swapData = window.compare_liu
+  if (window.sort_wang && window.sort_wang.length > 0) {
+    swapData = window.sort_wang
   } else {
     swapData = pairElements(getRandomNumbers(100), 20)
   }
 
-  console.log("Liu等的方法", swapData)
-  execute(swapData, "Liu等的方法")
+  console.log("Wang等的方法", swapData)
+  execute(swapData, "Wang等的方法")
 }
 
 function cancelCompare() {
