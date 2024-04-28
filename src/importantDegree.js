@@ -12,7 +12,7 @@ function getImportantDegree(allEntropy, excludeEntropy) {
     // 我们的计算方式可以保证分母一致，不需要进行转换
   }
 
-  const entropyNum = Math.abs(allEntropy[0] - excludeEntropy[0])
+  const entropyNum = allEntropy[0] - excludeEntropy[0]
   const entropyDen = allEntropy[1]
 
   return [entropyNum, entropyDen]
