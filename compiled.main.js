@@ -32997,13 +32997,41 @@ function getAdvanInfoEntropy(data) {
   const entropyDen = objectAmount * objectAmount // 分母
   let entropyNum = 0 // 分子
 
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 0; i < objectAmount; i++) {
     const moreBetterAmount = data[i].moreBetter.length
-    entropyNum += (data.length - moreBetterAmount)
+    entropyNum += (objectAmount - moreBetterAmount)
   }
 
   return [-entropyNum, entropyDen]
 }
+
+// function getAdvanInfoEntropy(data) {
+//   const objectAmount = data.length
+//   const entropyDen = objectAmount * objectAmount // 分母
+//   let entropyNum = 0 // 分子
+
+//   for (let i = 0; i < objectAmount; i++) {
+//     const moreBetterAmount = data[i].moreBetter.length
+//     entropyNum += (moreBetterAmount * (objectAmount - moreBetterAmount))
+//   }
+
+//   return [entropyNum, entropyDen]
+// }
+
+// 遍历累加
+// function getAdvanInfoEntropy(data) {
+//   const objectAmount = data.length
+//   const entropyDen = objectAmount * objectAmount // 分母
+//   let totalMoreBetter = 0
+
+//   for (let i = 0; i < objectAmount; i++) {
+//     totalMoreBetter += data[i].moreBetter.length
+//   }
+
+//   const entropyNum = entropyDen - totalMoreBetter
+
+//   return [entropyNum, entropyDen]
+// }
 
 module.exports = getAdvanInfoEntropy
 
