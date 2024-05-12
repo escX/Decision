@@ -8,18 +8,18 @@
  */
 
 // 遍历累加 -(objectAmount - moreBetter.length) / (objectAmount * objectAmount)
-function getAdvanInfoEntropy(data) {
-  const objectAmount = data.length
-  const entropyDen = objectAmount * objectAmount // 分母
-  let entropyNum = 0 // 分子
+// function getAdvanInfoEntropy(data) {
+//   const objectAmount = data.length
+//   const entropyDen = objectAmount * objectAmount // 分母
+//   let entropyNum = 0 // 分子
 
-  for (let i = 0; i < objectAmount; i++) {
-    const moreBetterAmount = data[i].moreBetter.length
-    entropyNum += (objectAmount - moreBetterAmount)
-  }
+//   for (let i = 0; i < objectAmount; i++) {
+//     const moreBetterAmount = data[i].moreBetter.length
+//     entropyNum += (objectAmount - moreBetterAmount)
+//   }
 
-  return [-entropyNum, entropyDen]
-}
+//   return [-entropyNum, entropyDen]
+// }
 
 // function getAdvanInfoEntropy(data) {
 //   const objectAmount = data.length
@@ -35,18 +35,18 @@ function getAdvanInfoEntropy(data) {
 // }
 
 // 遍历累加
-// function getAdvanInfoEntropy(data) {
-//   const objectAmount = data.length
-//   const entropyDen = objectAmount * objectAmount // 分母
-//   let totalMoreBetter = 0
+function getAdvanInfoEntropy(data) {
+  const objectAmount = data.length
+  const entropyDen = objectAmount * objectAmount // 分母
+  let totalMoreBetter = 0
 
-//   for (let i = 0; i < objectAmount; i++) {
-//     totalMoreBetter += data[i].moreBetter.length
-//   }
+  for (let i = 0; i < objectAmount; i++) {
+    totalMoreBetter += data[i].moreBetter.length
+  }
 
-//   const entropyNum = entropyDen - totalMoreBetter
+  const entropyNum = entropyDen - totalMoreBetter
 
-//   return [entropyNum, entropyDen]
-// }
+  return [entropyNum, entropyDen]
+}
 
 module.exports = getAdvanInfoEntropy
